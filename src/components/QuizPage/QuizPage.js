@@ -120,7 +120,7 @@ class QuizPage extends Component {
                     <React.Fragment key={answer}>
                       <button
                         key={answer}
-                        className={(cx(globalStyles["btn"], globalStyles["btn-warning"], localStyles["selectAnswer"]))}
+                        className={(cx(globalStyles["btn"], localStyles["selectAnswer"]))}
                         value={answer}
                         onClick={(event) => this.handleSelectAnswer(event)}
                       >
