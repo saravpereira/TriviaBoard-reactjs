@@ -26,12 +26,6 @@
   border: #d3276c
 }
 
-/* .btn:active,
-.btn:focus{
-  border: 1px solid #e1719d;
-  background: #e1719d;
-} */
-
 .selectAnswer:hover{
   background-color: #c57395;
   color: white;
