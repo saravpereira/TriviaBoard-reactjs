@@ -1,0 +1,30 @@
+/* Button */
+.button {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    -o-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    -moz-transition: background-color 0.35s ease-in-out;
+    -webkit-transition: background-color 0.35s ease-in-out;
+    -o-transition: background-color 0.35s ease-in-out;
+    -ms-transition: background-color 0.35s ease-in-out;
+    transition: background-color 0.35s ease-in-out;
+    background: #d84780;
+    border-radius: 6px;
+    border: 0;
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    padding: 0.75em 1.5em;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    display: inline-block;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #FFF !important;
+}
+    .button:hover {
+        background: #e1719d;
+    }

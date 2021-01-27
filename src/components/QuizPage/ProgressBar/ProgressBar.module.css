@@ -1,0 +1,17 @@
+.containerStyles {
+    height: 30px;
+    width: 70%;
+    background-color: #e0e0de;
+    border-radius: 50px;
+    margin-right: 20%;
+    margin-left: 15%;
+    margin-top: 10%;
+  }
+
+  @media only screen and (max-width: 925px) {
+    .containerStyles {
+      margin-top: 30%;
+    }
+
+    
+  }

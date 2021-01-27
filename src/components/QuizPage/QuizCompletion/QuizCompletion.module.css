@@ -1,0 +1,17 @@
+.completion {
+    padding: 3em;
+    background: #FFF;
+    margin: 10% 22%;
+    border-radius: 6px 6px 6px 6px;
+    width: 60%
+}
+
+.incorrectQs {
+    margin-top: 20px;
+}
+
+@media only screen and (max-width: 925px) {
+    .completion {
+      margin-top: 33%;
+    }
+  }

@@ -1,0 +1,15 @@
+
+.Logo {
+    background-color: white;
+    height: 100%;
+    box-sizing: border-box;
+    margin-right: auto;
+    border-radius: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+.Image{
+    max-height: 100%;
+}
+  
