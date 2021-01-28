@@ -35,7 +35,6 @@ class QuizPage extends Component {
     failedQuestions: [],
     quizCompleted: false,
     percentageCompleted: 0,
-    loading: true
   };
 
   componentDidMount() {
@@ -111,7 +110,7 @@ class QuizPage extends Component {
   render() {
     return (
       <React.Fragment>
-        {(this.state.questions.length && this.state.viewingQuestion && !this.state.loading) ? (
+        {(this.state.questions.length && this.state.viewingQuestion) && (
           <React.Fragment>
           <ProgressBar completed={this.state.percentageCompleted}/>
           <div className={(cx(globalStyles["container-fluid"]))}>
@@ -136,7 +135,7 @@ class QuizPage extends Component {
             </div>
           </div>
           </React.Fragment>
-        ) : <Spinner/>}
+        )}
         {this.state.quizCompleted && (
           <QuizCompletion
             selectedCategory={this.props.location.state.category[0]}
