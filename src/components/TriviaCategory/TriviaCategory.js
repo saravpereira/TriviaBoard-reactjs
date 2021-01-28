@@ -1,5 +1,5 @@
 import { React, Component, Fragment } from "react";
-import { withRouter, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import cx from "classnames";
 import globalStyles from "../../assets/global-styles/bootstrap.min.module.css";
 import localStyles from "./TriviaCategory.module.css";
@@ -47,4 +47,4 @@ class triviaCategory extends Component {
   }
 }
 
-export default withRouter(triviaCategory);
+export default triviaCategory;

@@ -5,6 +5,8 @@ import globalStyles from "../../assets/global-styles/bootstrap.min.module.css"
 import cx from 'classnames'
 import QuizCompletion from "../QuizPage/QuizCompletion/QuizCompletion";
 import ProgressBar from "./ProgressBar/ProgressBar"
+import EmptyPage from "./EmptyPage/EmptyPage"
+import Spinner from "../UI/Spinner/Spinner"
 
 function shuffle(array) {
   var currentIndex = array.length,
@@ -33,6 +35,7 @@ class QuizPage extends Component {
     failedQuestions: [],
     quizCompleted: false,
     percentageCompleted: 0,
+    loading: true
   };
 
   componentDidMount() {
@@ -48,7 +51,7 @@ class QuizPage extends Component {
           response.data.map((res) => {
             questions.push(res);
           });
-          this.setState({ questions: questions });
+          this.setState({ questions: questions, loading: false});
           this.loadQuestion(this.state.questions);
         });
     }
@@ -108,7 +111,7 @@ class QuizPage extends Component {
   render() {
     return (
       <React.Fragment>
-        {this.state.questions.length && this.state.viewingQuestion && (
+        {(this.state.questions.length && this.state.viewingQuestion && !this.state.loading) ? (
           <React.Fragment>
           <ProgressBar completed={this.state.percentageCompleted}/>
           <div className={(cx(globalStyles["container-fluid"]))}>
@@ -133,7 +136,7 @@ class QuizPage extends Component {
             </div>
           </div>
           </React.Fragment>
-        )}
+        ) : <Spinner/>}
         {this.state.quizCompleted && (
           <QuizCompletion
             selectedCategory={this.props.location.state.category[0]}
@@ -142,6 +145,8 @@ class QuizPage extends Component {
             handleQuizReset={() => this.handleQuizReset()}
           />
         )}
+        {!this.props.location.state && <EmptyPage/>}
+        
       </React.Fragment>
     );
   }
