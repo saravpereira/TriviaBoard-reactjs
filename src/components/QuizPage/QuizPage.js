@@ -1,154 +1,114 @@
 import React, { Component } from "react";
-import axios from "../../axios-trivia";
+import { connect } from "react-redux";
 import localStyles from "./QuizPage.module.css";
-import globalStyles from "../../assets/global-styles/bootstrap.min.module.css"
-import cx from 'classnames'
+import globalStyles from "../../assets/global-styles/bootstrap.min.module.css";
+import cx from "classnames";
 import QuizCompletion from "../QuizPage/QuizCompletion/QuizCompletion";
-import ProgressBar from "./ProgressBar/ProgressBar"
-import EmptyPage from "./EmptyPage/EmptyPage"
-import Spinner from "../UI/Spinner/Spinner"
-
-function shuffle(array) {
-  var currentIndex = array.length,
-    temporaryValue,
-    randomIndex;
-  while (0 !== currentIndex) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-
-  return array;
-}
+import ProgressBar from "./ProgressBar/ProgressBar";
+import EmptyPage from "./EmptyPage/EmptyPage";
+import * as actions from "../../store/actions/index";
 
 class QuizPage extends Component {
-  state = {
-    score: 0,
-    questions: [],
-    viewingQuestion: "",
-    correctAnswer: "",
-    viewingAnswers: [],
-    userSelectedAnswer: "",
-    failedQuestions: [],
-    quizCompleted: false,
-    percentageCompleted: 0,
-  };
-
   componentDidMount() {
-    this.getQuestions()
-  }
-
-  getQuestions() {
-    if (this.props.location.state) {
-      axios
-        .get("/" + this.props.location.state.selectedCategory + ".json")
-        .then((response) => {
-          const questions = [];
-          response.data.map((res) => {
-            questions.push(res);
-          });
-          this.setState({ questions: questions, loading: false});
-          this.loadQuestion(this.state.questions);
-        });
+    if(this.props.selectedCategory) {
+      this.props.onGetQuestions(this.props.selectedCategory);
     }
-  }
-
-  loadQuestion(array) {
-    const randomCount = Math.floor(Math.random() * (array.length - 1));
-    const questionObject = array[randomCount];
-    const answers = [
-      questionObject.correct_answer,
-      ...questionObject.incorrect_answers,
-    ];
-    this.setState({
-      viewingQuestion: questionObject.question,
-      viewingAnswers: shuffle(answers),
-      correctAnswer: questionObject.correct_answer,
-    });
   }
 
   handleSelectAnswer(event) {
-    if (event.target.value === this.state.correctAnswer) {
-      const newScore = this.state.score + 1;
-      this.setState({ score: newScore });
-    } else {
-      const q = [...this.state.failedQuestions, this.state.viewingQuestion];
-      this.setState({ failedQuestions: q });
-    }
-    
-    const remainingQuestions = this.state.questions.filter(
-      (ques) => ques.question !== this.state.viewingQuestion
+    this.props.onCheckAnswer(event.target.value, this.props.correctAnswer);
+    const remainingQuestions = this.props.questions.filter(
+      (ques) => ques.question !== this.props.viewingQuestion
     );
-    this.setState({ questions: remainingQuestions });
-    const percentage = ((50-remainingQuestions.length) / 50)*100
+    this.props.onUpdateRemainingQuestions(remainingQuestions);
     if (remainingQuestions.length >= 1) {
-      this.loadQuestion(remainingQuestions);
-      this.setState({percentageCompleted: percentage.toFixed(0)})
+      this.props.onLoadQuestion(remainingQuestions);
+      this.props.onUpdatePercentage(remainingQuestions);
     } else {
-      this.setState({ quizCompleted: true, percentageCompleted: 100 });
+      this.props.onQuizCompletion();
     }
   }
 
   handleQuizReset() {
-    this.setState({
-      score: 0,
-      questions: [],
-      viewingQuestion: "",
-      correctAnswer: "",
-      viewingAnswers: [],
-      userSelectedAnswer: "",
-      failedQuestions: [],
-      quizCompleted: false,
-      percentageCompleted: 0
-    })
-    this.getQuestions()
+    this.props.onQuizReset();
+    this.props.onGetQuestions(this.props.selectedCategory);
   }
 
   render() {
     return (
       <React.Fragment>
-        {(this.state.questions.length && this.state.viewingQuestion) && (
+        {this.props.questions.length && this.props.viewingQuestion && (
           <React.Fragment>
-          <ProgressBar completed={this.state.percentageCompleted}/>
-          <div className={(cx(globalStyles["container-fluid"]))}>
-            <div className={(cx(localStyles["section"], localStyles["questions"]))}>
-              <h3>{this.state.viewingQuestion}</h3>
-              <div className={(cx(localStyles["Answers"]))}>
-                {this.state.viewingAnswers.map((answer) => {
-                  return (
-                    <React.Fragment key={answer}>
-                      <button
-                        key={answer}
-                        className={(cx(globalStyles["btn"], localStyles["selectAnswer"]))}
-                        value={answer}
-                        onClick={(event) => this.handleSelectAnswer(event)}
-                      >
-                        {answer}
-                      </button>
-                    </React.Fragment>
-                  );
-                })}
+            <ProgressBar completed={this.props.percentageCompleted} />
+            <div className={cx(globalStyles["container-fluid"])}>
+              <div
+                className={cx(localStyles["section"], localStyles["questions"])}
+              >
+                <h3>{this.props.viewingQuestion}</h3>
+                <div className={cx(localStyles["Answers"])}>
+                  {this.props.viewingAnswers.map((answer) => {
+                    return (
+                      <React.Fragment key={answer}>
+                        <button
+                          key={answer}
+                          className={cx(
+                            globalStyles["btn"],
+                            localStyles["selectAnswer"]
+                          )}
+                          value={answer}
+                          onClick={(event) => this.handleSelectAnswer(event)}
+                        >
+                          {answer}
+                        </button>
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
           </React.Fragment>
         )}
-        {this.state.quizCompleted && (
+        {this.props.quizCompleted && (
           <QuizCompletion
-            selectedCategory={this.props.location.state.category[0]}
-            score={this.state.score}
-            failedQuestions={this.state.failedQuestions}
-            handleQuizReset={() => this.handleQuizReset()}
+            displayedCategory={this.props.location.state.category[0]}
           />
         )}
-        {!this.props.location.state && <EmptyPage/>}
-        
+        {!this.props.selectedCategory && <EmptyPage />}
       </React.Fragment>
     );
   }
 }
 
-export default QuizPage;
+const mapStateToProps = (state) => {
+  return {
+    selectedCategory: state.triviaBoard.selectedCategory,
+    startQuiz: state.triviaBoard.startQuiz,
+    score: state.quiz.score,
+    questions: state.quiz.questions,
+    viewingQuestion: state.quiz.viewingQuestion,
+    correctAnswer: state.quiz.correctAnswer,
+    viewingAnswers: state.quiz.viewingAnswers,
+    userSelectedAnswer: state.quiz.userSelectedAnswer,
+    failedQuestions: state.quiz.failedQuestions,
+    quizCompleted: state.quiz.quizCompleted,
+    percentageCompleted: state.quiz.percentageCompleted,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onLoadQuestion: (array) => dispatch(actions.loadQuestion(array)),
+    onGetQuestions: (selectedCategory) =>
+      dispatch(actions.getQuestions(selectedCategory)),
+    onCheckAnswer: (selectedAnswer, correctAnswer) =>
+      dispatch(actions.checkAnswer(selectedAnswer, correctAnswer)),
+    onUpdateRemainingQuestions: (remainingQuestions) =>
+      dispatch(actions.updateRemainingQuestions(remainingQuestions)),
+    onUpdatePercentage: (remainingQuestions) =>
+      dispatch(actions.updatePercentage(remainingQuestions)),
+    onQuizCompletion: () => dispatch(actions.quizCompletion()),
+    onQuizReset: () => dispatch(actions.quizReset()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuizPage);

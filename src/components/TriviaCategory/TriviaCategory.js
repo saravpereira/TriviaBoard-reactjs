@@ -1,20 +1,21 @@
 import { React, Component, Fragment } from "react";
 import { Redirect } from "react-router-dom";
+import { connect } from "react-redux";
 import cx from "classnames";
 import globalStyles from "../../assets/global-styles/bootstrap.min.module.css";
 import localStyles from "./TriviaCategory.module.css";
 import Button from "../UI/Buttons/Buttons";
+import * as actions from "../../store/actions/index";
 
 class triviaCategory extends Component {
   render() {
     let redirect = null;
-    if (this.props.currentState.startQuiz) {
+    if (this.props.startQuiz) {
       redirect = (
         <Redirect
           to={{
             pathname: "/quiz",
             state: {
-              selectedCategory: this.props.selectedCategory,
               category: this.props.category,
             },
           }}
@@ -35,7 +36,7 @@ class triviaCategory extends Component {
           <p>{this.props.description}</p>
           <Button
             clicked={() =>
-              this.props.handleUpdateSelectCategory(this.props.db_name)
+              this.props.onUpdateSelectCategory(this.props.db_name)
             }
           >
             Play!
@@ -47,4 +48,19 @@ class triviaCategory extends Component {
   }
 }
 
-export default triviaCategory;
+const mapStateToProps = (state) => {
+  return {
+    selectedCategory: state.triviaBoard.selectedCategory,
+    startQuiz: state.triviaBoard.startQuiz,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onUpdateSelectCategory: (category) =>
+      dispatch(actions.handleUpdateSelectCategory(category)),
+  };
+};
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(triviaCategory);

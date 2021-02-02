@@ -1,19 +1,13 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import TriviaCategory from "../../components/TriviaCategory/TriviaCategory";
 import categoryList from "../../data/CategoryList";
-import cx from 'classnames';
-import globalStyles from "../../assets/global-styles/bootstrap.min.module.css"
-import localStyles from "./TriviaBoard.module.css"
+import cx from "classnames";
+import globalStyles from "../../assets/global-styles/bootstrap.min.module.css";
+import localStyles from "./TriviaBoard.module.css";
+import * as actions from "../../store/actions/index";
 
 class TriviaBoard extends Component {
-  state = {
-    selectedCategory: "",
-    startQuiz: false
-  };
-
-  handleUpdateSelectCategory(category) {
-    this.setState({ selectedCategory: category, startQuiz: true});
-  }
 
   render() {
     const allCategories = categoryList.map((c) => {
@@ -24,26 +18,25 @@ class TriviaBoard extends Component {
           category={viewingCategory}
           description={c[viewingCategory].description}
           image={c[viewingCategory].img}
-          db_name = {c[viewingCategory].db_name}
-          handleUpdateSelectCategory={() =>
-            this.handleUpdateSelectCategory(c[viewingCategory].db_name)
-          }
-          currentState={this.state}
-          selectedCategory={this.state.selectedCategory}
-
+          db_name={c[viewingCategory].db_name}
         />
       );
     });
 
     return (
       <React.Fragment>
-        <div className={(cx(globalStyles["container-fluid"], localStyles["container-fluid"]))}>
-          <div className={(cx(globalStyles["row"]))}>{allCategories}</div>
+        <div
+          className={cx(
+            globalStyles["container-fluid"],
+            localStyles["container-fluid"]
+          )}
+        >
+          <div className={cx(globalStyles["row"])}>{allCategories}</div>
         </div>
       </React.Fragment>
     );
   }
 }
 
-export default TriviaBoard;
 
+export default TriviaBoard;
